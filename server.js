@@ -18,8 +18,8 @@ app.get('/', (req, res)=>{
     });
   });
 
-app.get('index2/', (req, res)=>{
-  res.render('index2', {
+app.get('level/', (req, res)=>{
+  res.render('level1', {
     title: "Find the path"
   });
 });

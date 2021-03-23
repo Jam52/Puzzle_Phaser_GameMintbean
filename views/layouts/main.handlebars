@@ -45,10 +45,22 @@
         </div>
     </div>
 
+    <div id="js_div">
+        <script src="js/phaser.js"></script>
+        <script type="module" src="js/MainScene.js"></script>
+        <script type="module" src="js/game.js"></script>
+    </div>
+    <script>
+        $("#js_div").ready(function () {
 
-    <script src="js/phaser.js"></script>
-    <!--<script type="module" src="js/MainScene.js"></script>-->
-    <!--<script type="module" src="js/game.js"></script>-->
+            $("#hide").click(function () {
+                $("p").hide();
+            });
+            $("#show").click(function () {
+                $("p").show();
+            });
+        });
+    </script>
 </body>
 
 </html>
