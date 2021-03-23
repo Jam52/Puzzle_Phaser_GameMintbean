@@ -7,31 +7,25 @@ const app = express();
 app.engine("handlebars", exp_hbs());
 app.set("view engine", "handlebars");
 
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({extended: false}));
 
 // access static file
 app.use(express.static('public'));
 
-app.get('/', (req, res)=>{
+app.get(`/`, (req, res)=>{
     res.render('index', {
       title: "Find the path"
     });
   });
 
-app.get('level/', (req, res)=>{
-  res.render('level1', {
-    title: "Find the path"
-  });
-});
-
-app.get('/play_game/', (req, res)=>{
-  res.render('playGame', {
-    title: "play find path game"
+app.get(`/newGame`, (req, res)=>{
+  res.render('newGame', {
+    title: "Playing Game Level"
   });
 });
 
 // listening route
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 app.listen(PORT, ()=>{
     console.log(`Server is running at ${PORT}`);
 })
