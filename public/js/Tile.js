@@ -4,10 +4,11 @@ export default class Tile extends Phaser.GameObjects.Container {
       tileSize,
       baseImage,
       finishLevel,
-      clickable,
+      getIsGamePlaying,
       hidden,
       xIndex,
       yIndex,
+      setTileClickable,
     } = data;
     let image = new Phaser.GameObjects.Sprite(scene, 0, 0, baseImage);
     let number = new Phaser.GameObjects.Text(
@@ -41,11 +42,12 @@ export default class Tile extends Phaser.GameObjects.Container {
     this.topImage
       .setInteractive()
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
-        if (clickable()) {
-          console.log(number);
+        let currentTile = gameData[xIndex][yIndex];
+        if (getIsGamePlaying() && currentTile.isTileClickable) {
+          setTileClickable(currentTile);
           topImage.setVisible(false);
         }
-        if (baseImage === 'bomb') {
+        if (baseImage === 'bomb' && currentTile.isTileClickable) {
           finishLevel(this.scene);
         }
       });
