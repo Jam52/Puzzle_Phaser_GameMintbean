@@ -93,7 +93,7 @@ export default class MainScene extends Phaser.Scene {
           });
         } else {
           //bombs are randomised using a % chance based on numOfMines / num of overall tiles
-          const isBomb = Math.random() < (15 + this.currentLevel * 5) / 88;
+          const isBomb = Math.random() < (15 + this.currentLevel * 3) / 88;
           let baseImage = 'emptyTile';
           if (isBomb) {
             baseImage = 'bomb';
@@ -254,6 +254,7 @@ export default class MainScene extends Phaser.Scene {
 
     // initialize the gameData and populate the gameboard with tiles
     const startGame = () => {
+      console.log(`Current Level: ${this.currentLevel}`);
       this.initilizeGameData();
       //set current level text
       level.setText(`Level: ${this.currentLevel}`);
