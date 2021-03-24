@@ -1,40 +1,46 @@
 export default class Tile extends Phaser.GameObjects.Container {
-  constructor(config) {
-    const { scene, x, y, hidden, tileSize, clickedImage, finishLevel } = config;
-    let image = new Phaser.GameObjects.Sprite(scene, 0, 0, hidden);
-    super(scene, x, y, image);
+  constructor(data, x, y) {
+    const {
+      scene,
+      hidden,
+      tileSize,
+      bottomImage,
+      finishLevel,
+      clickable,
+    } = data;
+
+    let image = new Phaser.GameObjects.Sprite(scene, 0, 0, bottomImage);
+    let topImage = new Phaser.GameObjects.Sprite(scene, 0, 0, hidden);
+    super(scene, x, y, [image, topImage]);
     this.image = image;
+    this.topImage = topImage;
     this.scene = scene;
     this.tileSize = tileSize;
     this.finishLevel = finishLevel;
-    this.clickedImage = clickedImage;
     this.image.displayWidth = tileSize;
     this.image.displayHeight = tileSize;
-    this.scene.input.on('pointerup', this.tileClick.bind(this));
+    this.topImage.displayWidth = tileSize;
+    this.topImage.displayHeight = tileSize;
+    this.tileClick = this.tileClick;
+    this.topImage
+      .setInteractive()
+      .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
+        if (clickable()) {
+          topImage.setVisible(false);
+        }
+        if (bottomImage !== 'bomb') {
+          finishLevel(this.scene);
+        }
+      });
     scene.add.existing(this);
   }
 
-  tileClick(event) {
+  tileClick = function (event) {
     console.log(event);
-    const { downX, downY } = event;
-    const tileXValues = [
-      this.x - this.tileSize / 2,
-      this.x + this.tileSize / 2,
-    ];
-    const tileYValues = [
-      this.y - this.tileSize / 2,
-      this.y + this.tileSize / 2,
-    ];
-    console.log(tileXValues, downX);
-    if (
-      downX > tileXValues[0] &&
-      downX < tileXValues[1] &&
-      downY > tileYValues[0] &&
-      downY < tileYValues[1]
-    ) {
-      console.log('clicked');
-      this.finishLevel();
-      this.image.setTexture(this.clickedImage);
-    }
-  }
+    this.topImage.setVisible(false);
+
+    this.finishLevel(this.scene);
+    this.setClickable(false);
+    this.image.setTexture(this.clickedImage);
+  };
 }
