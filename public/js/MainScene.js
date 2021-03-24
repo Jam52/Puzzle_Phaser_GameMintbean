@@ -7,6 +7,7 @@ export default class MainScene extends Phaser.Scene {
     this.isGamePlaying = true;
     this.gameData = {};
     this.numOfMines = 20;
+    this.currentLevel = 1;
   }
 
   setIsGamePlaying = (isGamePlaying) => {
@@ -170,7 +171,7 @@ export default class MainScene extends Phaser.Scene {
     const sceneHeight = this.sys.game.config.height;
 
     let startingX = (sceneWidth - tileSize * 12 + tileSize) / 2;
-    let startingY = (sceneHeight - tileSize * 8 + tileSize) / 2;
+    let startingY = 60;
 
     // Set Background position
     let background = this.add.sprite(0, 0, 'background');
@@ -187,6 +188,16 @@ export default class MainScene extends Phaser.Scene {
 
     //populate the gameboard with tiles
     const startGame = () => {
+      let level = this.add.text(
+        sceneWidth - startingX + 18,
+        10,
+        'level:' + this.currentLevel,
+        {
+          fontSize: '20px',
+        },
+      );
+      level.displayOriginX = level.displayWidth;
+      console.log(level);
       this.setIsGamePlaying(true);
       for (let Xindex = 0; Xindex < 12; Xindex++) {
         const x = startingX + tileSize * Xindex;
