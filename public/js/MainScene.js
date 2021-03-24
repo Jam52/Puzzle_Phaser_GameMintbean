@@ -40,6 +40,7 @@ export default class MainScene extends Phaser.Scene {
    - the objects in the array contain the gameData for each tile.
   */
   initilizeGameData = () => {
+    this.gameData = {};
     console.log('initilizing');
     const numOfMines = this.numOfMines;
     //specifiy index's where bombs cannot be placed
@@ -105,7 +106,6 @@ export default class MainScene extends Phaser.Scene {
     Object.keys(this.gameData).map((xIndex) => {
       this.gameData[xIndex].map((tileData) => {
         if (tileData.baseImage === 'bomb') {
-          console.log(tileData);
           const { xIndex, yIndex } = tileData;
           if (xIndex > 0) {
             this.gameData[xIndex - 1][yIndex].number += 1;
@@ -247,6 +247,7 @@ export default class MainScene extends Phaser.Scene {
 
     //populate the gameboard with tiles
     const startGame = () => {
+      console.log(this.gameData);
       level.setText(`Level: ${this.currentLevel}`);
       level.displayOriginX = level.displayWidth;
       console.log(level);
