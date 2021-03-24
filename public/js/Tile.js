@@ -10,6 +10,8 @@ export default class Tile extends Phaser.GameObjects.Container {
       xIndex,
       yIndex,
       setTileClickable,
+      getLives,
+      setLives,
     } = data;
     let image = new Phaser.GameObjects.Sprite(scene, 0, 0, baseImage);
     let number = new Phaser.GameObjects.Text(
@@ -49,7 +51,10 @@ export default class Tile extends Phaser.GameObjects.Container {
             topImage.setVisible(false);
           }
           if (baseImage === 'bomb') {
-            loseLevel(this.scene);
+            setLives(getLives() - 1);
+            if (getLives() === 0) {
+              loseLevel(this.scene);
+            }
           }
           if (baseImage === 'endTile') {
             winLevel(this.scene);

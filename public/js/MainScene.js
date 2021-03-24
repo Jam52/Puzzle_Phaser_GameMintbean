@@ -38,10 +38,6 @@ export default class MainScene extends Phaser.Scene {
     this.currentLevel += 1;
   };
 
-  setLives = (newLives) => {
-    this.lives = newLives;
-  };
-
   getLives = () => {
     return this.lives;
   };
@@ -207,6 +203,11 @@ export default class MainScene extends Phaser.Scene {
       fontStyle: 'bold',
     });
 
+    const setLives = (newLives) => {
+      this.lives = newLives;
+      livesText.setText(newLives);
+    };
+
     /* function called when game is lost, sets the isGameplaying to false to stop tiles from 
     being able to the clicked when clicked re-initializes and restarts the game.
     */
@@ -217,6 +218,8 @@ export default class MainScene extends Phaser.Scene {
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('bomb clicked');
           tiles.forEach((tile) => tile.destroy());
+          this.lives = 3;
+          this.level = 1;
           startGame();
         });
       this.setIsGamePlaying(false);
@@ -246,6 +249,8 @@ export default class MainScene extends Phaser.Scene {
       winLevel,
       getIsGamePlaying: this.getIsGamePlaying,
       setTileClickable: this.setTileClickable,
+      getLives: this.getLives,
+      setLives,
     };
 
     // initialize the gameData and populate the gameboard with tiles
