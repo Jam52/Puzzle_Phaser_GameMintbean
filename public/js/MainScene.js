@@ -25,24 +25,27 @@ export default class MainScene extends Phaser.Scene {
   };
 
   setTileClickable = (tileData) => {
-    this.surroundingTiles(tileData, 'isTileClickable', true);
+    this.surroundingTilesCoordinatesArray(tileData).forEach(
+      (tileCoordinates) => {
+        const [x, y] = tileCoordinates;
+        this.gameData[x][y].isTileClickable = true;
+      },
+    );
   };
 
   upCurrentLevelByOne = () => {
     this.currentLevel += 1;
   };
 
-  /* 
-  A function to build the gameData the gameTiles will be created from
-  The data is an object where 
-   - keys are a reference to the xIndex for the tiles possition
-   - each key has an array of objects whoes index is the yIndex for the tile possition
-   - the objects in the array contain the gameData for each tile.
-  */
+  /* A method to build the gameData that the gameTiles will be created from
+    The data is an object: 
+    - keys are a reference to the xIndex for the tiles possition
+    - each key has an array of objects whoes index is the yIndex for the tile possition
+    - the objects in the array contain the gameData for each tile. */
+
   initilizeGameData = () => {
     this.gameData = {};
     console.log('initilizing');
-    const numOfMines = this.numOfMines;
     //specifiy index's where bombs cannot be placed
     const bombIndexNotAllowed = [
       [0, 1],
@@ -84,8 +87,8 @@ export default class MainScene extends Phaser.Scene {
             isTileClickable: false,
           });
         } else {
-          const isBomb = Math.random() < numOfMines / 88;
-
+          //bombs are randomised using a % chance based on numOfMines / num of overall tiles
+          const isBomb = Math.random() < this.numOfMines / 88;
           let baseImage = 'emptyTile';
           if (isBomb) {
             baseImage = 'bomb';
@@ -102,35 +105,16 @@ export default class MainScene extends Phaser.Scene {
       this.gameData[x] = yIndexArray;
     }
 
-    //add number to the gameData surrounding the mines
+    //add number to the tileData surrounding the mines
     Object.keys(this.gameData).map((xIndex) => {
       this.gameData[xIndex].map((tileData) => {
         if (tileData.baseImage === 'bomb') {
-          const { xIndex, yIndex } = tileData;
-          if (xIndex > 0) {
-            this.gameData[xIndex - 1][yIndex].number += 1;
-          }
-          if (xIndex < 11) {
-            this.gameData[xIndex + 1][yIndex].number += 1;
-          }
-          if (yIndex > 0) {
-            this.gameData[xIndex][yIndex - 1].number += 1;
-          }
-          if (yIndex < 7) {
-            this.gameData[xIndex][yIndex + 1].number += 1;
-          }
-          if (xIndex > 0 && yIndex > 0) {
-            this.gameData[xIndex - 1][yIndex - 1].number += 1;
-          }
-          if (xIndex > 0 && yIndex < 7) {
-            this.gameData[xIndex - 1][yIndex + 1].number += 1;
-          }
-          if (xIndex < 11 && yIndex > 0) {
-            this.gameData[xIndex + 1][yIndex - 1].number += 1;
-          }
-          if (xIndex < 11 && yIndex < 7) {
-            this.gameData[xIndex + 1][yIndex + 1].number += 1;
-          }
+          this.surroundingTilesCoordinatesArray(tileData).forEach(
+            (tileCoordinates) => {
+              const [x, y] = tileCoordinates;
+              this.gameData[x][y].number += 1;
+            },
+          );
         }
       });
     });
@@ -141,32 +125,35 @@ export default class MainScene extends Phaser.Scene {
     this.gameData[1][0].isTileClickable = true;
   };
 
-  surroundingTiles = (tileData, key, result) => {
+  //method to return coodinates (x,y) of all surrdounding tiles if they exists
+  surroundingTilesCoordinatesArray = (tileData) => {
+    let surroundingTileArray = [];
     const { xIndex, yIndex } = tileData;
     if (xIndex > 0) {
-      this.gameData[xIndex - 1][yIndex][key] = result;
+      surroundingTileArray.push([[xIndex - 1], [yIndex]]);
     }
     if (xIndex < 11) {
-      this.gameData[xIndex + 1][yIndex][key] = result;
+      surroundingTileArray.push([[xIndex + 1], [yIndex]]);
     }
     if (yIndex > 0) {
-      this.gameData[xIndex][yIndex - 1][key] = result;
+      surroundingTileArray.push([[xIndex], [yIndex - 1]]);
     }
     if (yIndex < 7) {
-      this.gameData[xIndex][yIndex + 1][key] = result;
+      surroundingTileArray.push([[xIndex], [yIndex + 1]]);
     }
     if (xIndex > 0 && yIndex > 0) {
-      this.gameData[xIndex - 1][yIndex - 1][key] = result;
+      surroundingTileArray.push([[xIndex - 1], [yIndex - 1]]);
     }
     if (xIndex > 0 && yIndex < 7) {
-      this.gameData[xIndex - 1][yIndex + 1][key] = result;
+      surroundingTileArray.push([[xIndex - 1], [yIndex + 1]]);
     }
     if (xIndex < 11 && yIndex > 0) {
-      this.gameData[xIndex + 1][yIndex - 1][key] = result;
+      surroundingTileArray.push([[xIndex + 1], [yIndex - 1]]);
     }
     if (xIndex < 11 && yIndex < 7) {
-      this.gameData[xIndex + 1][yIndex + 1][key] = result;
+      surroundingTileArray.push([[xIndex + 1], [yIndex + 1]]);
     }
+    return surroundingTileArray;
   };
 
   preload() {
@@ -250,7 +237,6 @@ export default class MainScene extends Phaser.Scene {
 
     //populate the gameboard with tiles
     const startGame = () => {
-      console.log(this.numOfMines);
       level.setText(`Level: ${this.currentLevel}`);
       level.displayOriginX = level.displayWidth;
       this.setIsGamePlaying(true);
