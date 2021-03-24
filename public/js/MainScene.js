@@ -8,6 +8,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameData = {};
     this.numOfMines = 15;
     this.currentLevel = 1;
+    this.lives = 3;
   }
 
   //setter for isGamePlaying set to true on new level or start again
@@ -35,6 +36,14 @@ export default class MainScene extends Phaser.Scene {
 
   upCurrentLevelByOne = () => {
     this.currentLevel += 1;
+  };
+
+  setLives = (newLives) => {
+    this.lives = newLives;
+  };
+
+  getLives = () => {
+    return this.lives;
   };
 
   /* ---- InizializeGameData Method ---- 
@@ -167,6 +176,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image('endTile', './assets/Puzzle_End.jpg');
     this.load.image('fail', './assets/fail_game.jpg');
     this.load.image('win', './assets/win_game.jpg');
+    this.load.image('heart', './assets/heart.png');
   }
 
   create() {
@@ -185,6 +195,16 @@ export default class MainScene extends Phaser.Scene {
     // Set level text
     let level = this.add.text(sceneWidth - startingX + 18, 10, 'level: 1', {
       fontSize: '20px',
+    });
+
+    //set heart image
+    let heartImage = this.add.sprite(45, 50, 'heart');
+    heartImage.displayWidth = 50;
+    heartImage.displayHeight = 50;
+
+    let livesText = this.add.text(39, 40, this.lives, {
+      fontSize: '20px',
+      fontStyle: 'bold',
     });
 
     /* function called when game is lost, sets the isGameplaying to false to stop tiles from 
