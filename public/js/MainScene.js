@@ -37,11 +37,12 @@ export default class MainScene extends Phaser.Scene {
     this.currentLevel += 1;
   };
 
-  /* A method to build the gameData that the gameTiles will be created from
-    The data is an object: 
-    - keys are a reference to the xIndex for the tiles possition
-    - each key has an array of objects whoes index is the yIndex for the tile possition
-    - the objects in the array contain the gameData for each tile. */
+  /* ---- InizializeGameData Method ---- 
+      - object format = {key: [{},{}]}
+      - keys match xIndex of the tiles
+      - values as array of objects whos index match the yIndex of the tiles.
+      - tile data format = {xIndex: int, yIndex: int, baseImage: string, number: int, isTileClickable: bool }
+  */
 
   initilizeGameData = () => {
     this.gameData = {};
@@ -105,7 +106,7 @@ export default class MainScene extends Phaser.Scene {
       this.gameData[x] = yIndexArray;
     }
 
-    //add number to the tileData surrounding the mines
+    //add number to the tileData of tiles surrounding the mines
     Object.keys(this.gameData).map((xIndex) => {
       this.gameData[xIndex].map((tileData) => {
         if (tileData.baseImage === 'bomb') {
@@ -124,6 +125,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameData[1][1].isTileClickable = true;
     this.gameData[1][0].isTileClickable = true;
   };
+  /* ---- END initilizeGame Method ----*/
 
   //method to return coodinates (x,y) of all surrdounding tiles if they exists
   surroundingTilesCoordinatesArray = (tileData) => {
@@ -168,9 +170,22 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
+    const sceneWidth = this.sys.game.config.width;
+    const sceneHeight = this.sys.game.config.height;
     let tileSize = 38;
-    this.initilizeGameData();
+    let startingX = (sceneWidth - tileSize * 12 + tileSize) / 2;
+    let startingY = 60;
     let tiles = [];
+
+    // Set Background position
+    let background = this.add.sprite(0, 0, 'background');
+    background.setOrigin(0, 0);
+    background.displayWidth = sceneWidth;
+
+    // Set level text
+    let level = this.add.text(sceneWidth - startingX + 18, 10, 'level: 1', {
+      fontSize: '20px',
+    });
 
     /* function called when game is lost, sets the isGameplaying to false to stop tiles from 
     being able to the clicked when clicked re-initializes and restarts the game.
@@ -181,7 +196,6 @@ export default class MainScene extends Phaser.Scene {
         .setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('bomb clicked');
-          this.scene.initilizeGameData();
           tiles.forEach((tile) => tile.destroy());
           startGame();
         });
@@ -198,33 +212,12 @@ export default class MainScene extends Phaser.Scene {
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('end clicked');
           this.scene.setNumOfMines(this.scene.numOfMines + 5);
-          this.scene.initilizeGameData();
           this.scene.upCurrentLevelByOne();
           tiles.forEach((tile) => tile.destroy());
           startGame();
         });
       this.setIsGamePlaying(false);
     };
-
-    const sceneWidth = this.sys.game.config.width;
-    const sceneHeight = this.sys.game.config.height;
-
-    let startingX = (sceneWidth - tileSize * 12 + tileSize) / 2;
-    let startingY = 60;
-
-    // Set Background position
-    let background = this.add.sprite(0, 0, 'background');
-    background.setOrigin(0, 0);
-    background.displayWidth = sceneWidth;
-
-    let level = this.add.text(
-      sceneWidth - startingX + 18,
-      10,
-      'level:' + this.currentLevel,
-      {
-        fontSize: '20px',
-      },
-    );
 
     let tileObjectData = {
       hidden: 'hiddenTile',
@@ -235,8 +228,9 @@ export default class MainScene extends Phaser.Scene {
       setTileClickable: this.setTileClickable,
     };
 
-    //populate the gameboard with tiles
+    // initialize the gameData and populate the gameboard with tiles
     const startGame = () => {
+      this.initilizeGameData();
       level.setText(`Level: ${this.currentLevel}`);
       level.displayOriginX = level.displayWidth;
       this.setIsGamePlaying(true);
