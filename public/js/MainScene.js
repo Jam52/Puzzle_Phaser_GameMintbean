@@ -39,9 +39,9 @@ export default class MainScene extends Phaser.Scene {
    - each key has an array of objects whoes index is the yIndex for the tile possition
    - the objects in the array contain the gameData for each tile.
   */
-  initilizeGameData = (numOfMines = 10) => {
+  initilizeGameData = () => {
     console.log('initilizing');
-
+    const numOfMines = this.numOfMines;
     //specifiy index's where bombs cannot be placed
     const bombIndexNotAllowed = [
       [0, 1],
@@ -159,7 +159,7 @@ export default class MainScene extends Phaser.Scene {
 
   create() {
     let tileSize = 38;
-    this.initilizeGameData(this.numOfMines);
+    this.initilizeGameData();
 
     /* function called when game is lost, sets the isGameplaying to false to stop tiles from 
     being able to the clicked when clicked re-initializes and restarts the game.
@@ -170,7 +170,7 @@ export default class MainScene extends Phaser.Scene {
         .setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('bomb clicked');
-          this.scene.initilizeGameData(this.numOfMines);
+          this.scene.initilizeGameData();
           startGame();
         });
       this.setIsGamePlaying(false);
@@ -185,7 +185,8 @@ export default class MainScene extends Phaser.Scene {
         .setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('end clicked');
-          this.scene.initilizeGameData((this.numOfMines += 5));
+          this.setNumOfMines(this.numOfMines + 5);
+          this.scene.initilizeGameData();
           this.scene.upCurrentLevelByOne();
           startGame();
         });

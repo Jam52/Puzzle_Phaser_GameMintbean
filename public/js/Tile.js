@@ -49,7 +49,6 @@ export default class Tile extends Phaser.GameObjects.Container {
             topImage.setVisible(false);
           }
           if (baseImage === 'bomb') {
-            this.destroy();
             loseLevel(this.scene);
           }
           if (baseImage === 'endTile') {
@@ -59,9 +58,4 @@ export default class Tile extends Phaser.GameObjects.Container {
       });
     scene.add.existing(this);
   }
-
-  destroy = () => {
-    console.log(this);
-    this.destroy();
-  };
 }
