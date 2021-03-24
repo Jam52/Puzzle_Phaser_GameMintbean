@@ -105,12 +105,35 @@ export default class MainScene extends Phaser.Scene {
     Object.keys(this.gameData).map((xIndex) => {
       this.gameData[xIndex].map((tileData) => {
         if (tileData.baseImage === 'bomb') {
-          this.surroundingTiles(tileData, 'number', tileData.number + 1);
+          console.log(tileData);
+          const { xIndex, yIndex } = tileData;
+          if (xIndex > 0) {
+            this.gameData[xIndex - 1][yIndex].number += 1;
+          }
+          if (xIndex < 11) {
+            this.gameData[xIndex + 1][yIndex].number += 1;
+          }
+          if (yIndex > 0) {
+            this.gameData[xIndex][yIndex - 1].number += 1;
+          }
+          if (yIndex < 7) {
+            this.gameData[xIndex][yIndex + 1].number += 1;
+          }
+          if (xIndex > 0 && yIndex > 0) {
+            this.gameData[xIndex - 1][yIndex - 1].number += 1;
+          }
+          if (xIndex > 0 && yIndex < 7) {
+            this.gameData[xIndex - 1][yIndex + 1].number += 1;
+          }
+          if (xIndex < 11 && yIndex > 0) {
+            this.gameData[xIndex + 1][yIndex - 1].number += 1;
+          }
+          if (xIndex < 11 && yIndex < 7) {
+            this.gameData[xIndex + 1][yIndex + 1].number += 1;
+          }
         }
       });
     });
-
-    console.log(this.gameData);
 
     //set first three tiles to clickable
     this.gameData[0][1].isTileClickable = true;
