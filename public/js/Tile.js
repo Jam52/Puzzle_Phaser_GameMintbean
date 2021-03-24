@@ -21,14 +21,13 @@ export default class Tile extends Phaser.GameObjects.Container {
     this.image.displayHeight = tileSize;
     this.topImage.displayWidth = tileSize;
     this.topImage.displayHeight = tileSize;
-    this.tileClick = this.tileClick;
     this.topImage
       .setInteractive()
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
         if (clickable()) {
           topImage.setVisible(false);
         }
-        if (bottomImage !== 'bomb') {
+        if (bottomImage === 'bomb') {
           finishLevel(this.scene);
         }
       });

@@ -5,16 +5,35 @@ export default class MainScene extends Phaser.Scene {
   constructor() {
     super('MainScene');
     this.clickable = true;
-    this.setClickable = this.setClickable.bind(this);
-    this.getClickable = this.getClickable.bind(this);
+    this.setClickable = this.setClickable;
+    this.getClickable = this.getClickable;
+    this.gameData = {};
+    this.initilizeGameData = this.initilizeGameData;
   }
 
-  setClickable = function (isClickable) {
+  setClickable = (isClickable) => {
     this.clickable = isClickable;
   };
 
-  getClickable = function () {
+  getClickable = () => {
     return this.clickable;
+  };
+
+  initilizeGameData = () => {
+    console.log('initilizing');
+    for (let x = 0; x < 12; x++) {
+      let yIndexArray = [];
+      for (let y = 0; y < 8; y++) {
+        if (x === 0 && y === 0) {
+          yIndexArray.push({ xIndex: x, yIndex: y, image: 'startTile' });
+        } else if (x === 11 && y === 7) {
+          yIndexArray.push({ xIndex: x, yIndex: y, image: 'endTile' });
+        } else {
+          yIndexArray.push({ xIndex: x, yIndex: y, image: 'emptyTile' });
+        }
+      }
+      this.gameData[x] = yIndexArray;
+    }
   };
 
   preload() {
@@ -28,20 +47,27 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
+    this.initilizeGameData();
+    console.log(this.gameData);
+
+    const sceneWidth = this.sys.game.config.width;
+    const sceneHeight = this.sys.game.config.height;
+
     const finishLevel = (scene) => {
-      scene.add.sprite(100, 100, 'fail');
+      scene.add.sprite(sceneWidth / 2, sceneHeight / 2, 'fail');
       this.setClickable(false);
       console.log(this);
     };
+
     // Set Background position
     let background = this.add.sprite(0, 0, 'background');
     background.setOrigin(0, 0);
-    background.displayWidth = this.sys.game.config.width;
+    background.displayWidth = sceneWidth;
 
     let tileSize = 35;
-    let startingX = (this.sys.game.config.width - tileSize * 12) / 2;
-    let startingY = (this.sys.game.config.height - tileSize * 8) / 2;
-    let endingX = this.sys.game.config.width - startingX - tileSize;
+    let startingX = (sceneWidth - tileSize * 12) / 2;
+    let startingY = (sceneHeight - tileSize * 8) / 2;
+    let endingX = sceneWidth - startingX - tileSize;
 
     let tileObjectData = {
       scene: this,
