@@ -6,7 +6,6 @@ export default class MainScene extends Phaser.Scene {
     super('MainScene');
     this.isGamePlaying = true;
     this.gameData = {};
-    this.numOfMines = 15;
     this.currentLevel = 1;
     this.lives = 3;
   }
@@ -94,7 +93,7 @@ export default class MainScene extends Phaser.Scene {
           });
         } else {
           //bombs are randomised using a % chance based on numOfMines / num of overall tiles
-          const isBomb = Math.random() < this.numOfMines / 88;
+          const isBomb = Math.random() < (15 + this.currentLevel * 5) / 88;
           let baseImage = 'emptyTile';
           if (isBomb) {
             baseImage = 'bomb';
@@ -218,9 +217,8 @@ export default class MainScene extends Phaser.Scene {
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('bomb clicked');
           tiles.forEach((tile) => tile.destroy());
-
           this.scene.lives = 3;
-          this.scene.level = 1;
+          this.scene.currentLevel = 1;
           startGame();
         });
       this.setIsGamePlaying(false);
@@ -235,7 +233,6 @@ export default class MainScene extends Phaser.Scene {
         .setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('end clicked');
-          this.scene.setNumOfMines(this.scene.numOfMines + 5);
           this.scene.upCurrentLevelByOne();
           tiles.forEach((tile) => tile.destroy());
           this.scene.lives += 1;
