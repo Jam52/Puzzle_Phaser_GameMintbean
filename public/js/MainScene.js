@@ -218,8 +218,9 @@ export default class MainScene extends Phaser.Scene {
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('bomb clicked');
           tiles.forEach((tile) => tile.destroy());
-          this.lives = 3;
-          this.level = 1;
+
+          this.scene.lives = 3;
+          this.scene.level = 1;
           startGame();
         });
       this.setIsGamePlaying(false);
@@ -237,6 +238,7 @@ export default class MainScene extends Phaser.Scene {
           this.scene.setNumOfMines(this.scene.numOfMines + 5);
           this.scene.upCurrentLevelByOne();
           tiles.forEach((tile) => tile.destroy());
+          this.scene.lives += 1;
           startGame();
         });
       this.setIsGamePlaying(false);
@@ -256,8 +258,12 @@ export default class MainScene extends Phaser.Scene {
     // initialize the gameData and populate the gameboard with tiles
     const startGame = () => {
       this.initilizeGameData();
+      //set current level text
       level.setText(`Level: ${this.currentLevel}`);
       level.displayOriginX = level.displayWidth;
+
+      //set current lives text
+      livesText.setText(this.lives);
       this.setIsGamePlaying(true);
       for (let Xindex = 0; Xindex < 12; Xindex++) {
         const x = startingX + tileSize * Xindex;
