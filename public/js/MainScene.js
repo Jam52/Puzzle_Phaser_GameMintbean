@@ -183,6 +183,7 @@ export default class MainScene extends Phaser.Scene {
   create() {
     let tileSize = 38;
     this.initilizeGameData();
+    let tiles = [];
 
     /* function called when game is lost, sets the isGameplaying to false to stop tiles from 
     being able to the clicked when clicked re-initializes and restarts the game.
@@ -194,6 +195,7 @@ export default class MainScene extends Phaser.Scene {
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('bomb clicked');
           this.scene.initilizeGameData();
+          tiles.forEach((tile) => tile.destroy());
           startGame();
         });
       this.setIsGamePlaying(false);
@@ -211,6 +213,7 @@ export default class MainScene extends Phaser.Scene {
           this.scene.setNumOfMines(this.scene.numOfMines + 5);
           this.scene.initilizeGameData();
           this.scene.upCurrentLevelByOne();
+          tiles.forEach((tile) => tile.destroy());
           startGame();
         });
       this.setIsGamePlaying(false);
@@ -250,18 +253,19 @@ export default class MainScene extends Phaser.Scene {
       console.log(this.numOfMines);
       level.setText(`Level: ${this.currentLevel}`);
       level.displayOriginX = level.displayWidth;
-      console.log(level);
       this.setIsGamePlaying(true);
       for (let Xindex = 0; Xindex < 12; Xindex++) {
         const x = startingX + tileSize * Xindex;
         for (let Yindex = 0; Yindex < 8; Yindex++) {
           const y = startingY + Yindex * tileSize;
-          let tile = new Tile(
-            this,
-            { ...this.gameData[Xindex][Yindex], ...tileObjectData },
-            x,
-            y,
-            this.gameData,
+          tiles.push(
+            new Tile(
+              this,
+              { ...this.gameData[Xindex][Yindex], ...tileObjectData },
+              x,
+              y,
+              this.gameData,
+            ),
           );
         }
       }
