@@ -6,7 +6,7 @@ export default class MainScene extends Phaser.Scene {
     super('MainScene');
     this.isGamePlaying = true;
     this.gameData = {};
-    this.numOfMines = 20;
+    this.numOfMines = 10;
     this.currentLevel = 1;
   }
 
@@ -208,7 +208,7 @@ export default class MainScene extends Phaser.Scene {
         .setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('end clicked');
-          this.setNumOfMines(this.numOfMines + 5);
+          this.scene.setNumOfMines(this.numOfMines + 5);
           this.scene.initilizeGameData();
           this.scene.upCurrentLevelByOne();
           startGame();
