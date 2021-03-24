@@ -1,16 +1,13 @@
 export default class Tile extends Phaser.GameObjects.Container {
-  constructor(data, x, y) {
-    const {
+  constructor(scene, data, x, y) {
+    const { tileSize, baseImage, finishLevel, clickable, hidden } = data;
+    let image = new Phaser.GameObjects.Sprite(scene, 0, 0, baseImage);
+    let topImage = new Phaser.GameObjects.Sprite(
       scene,
-      hidden,
-      tileSize,
-      bottomImage,
-      finishLevel,
-      clickable,
-    } = data;
-
-    let image = new Phaser.GameObjects.Sprite(scene, 0, 0, bottomImage);
-    let topImage = new Phaser.GameObjects.Sprite(scene, 0, 0, hidden);
+      0,
+      0,
+      baseImage === 'startTile' || baseImage === 'endTile' ? baseImage : hidden,
+    );
     super(scene, x, y, [image, topImage]);
     this.image = image;
     this.topImage = topImage;
@@ -27,7 +24,7 @@ export default class Tile extends Phaser.GameObjects.Container {
         if (clickable()) {
           topImage.setVisible(false);
         }
-        if (bottomImage === 'bomb') {
+        if (baseImage === 'bomb') {
           finishLevel(this.scene);
         }
       });

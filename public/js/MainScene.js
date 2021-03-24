@@ -5,10 +5,8 @@ export default class MainScene extends Phaser.Scene {
   constructor() {
     super('MainScene');
     this.clickable = true;
-    this.setClickable = this.setClickable;
-    this.getClickable = this.getClickable;
     this.gameData = {};
-    this.initilizeGameData = this.initilizeGameData;
+    this.numOfMines = 20;
   }
 
   setClickable = (isClickable) => {
@@ -19,17 +17,43 @@ export default class MainScene extends Phaser.Scene {
     return this.clickable;
   };
 
-  initilizeGameData = () => {
+  setNumOfMines = (newNumOfMines) => {
+    this.numOfMines = newNumOfMines;
+  };
+
+  initilizeGameData = (numOfMines = 20) => {
     console.log('initilizing');
+
+    //specifiy index's where bombs cannot be placed
+    const bombIndexNotAllowed = [
+      [0, 1],
+      [1, 0],
+      [1, 1],
+      [10, 6],
+      [10, 7],
+      [11, 6],
+    ];
+
+    //build gameData object
     for (let x = 0; x < 12; x++) {
       let yIndexArray = [];
       for (let y = 0; y < 8; y++) {
         if (x === 0 && y === 0) {
-          yIndexArray.push({ xIndex: x, yIndex: y, image: 'startTile' });
+          yIndexArray.push({ xIndex: x, yIndex: y, baseImage: 'startTile' });
         } else if (x === 11 && y === 7) {
-          yIndexArray.push({ xIndex: x, yIndex: y, image: 'endTile' });
+          yIndexArray.push({ xIndex: x, yIndex: y, baseImage: 'endTile' });
+        } else if (
+          bombIndexNotAllowed.some((index) => index[0] === x && index[1] === y)
+        ) {
+          yIndexArray.push({ xIndex: x, yIndex: y, baseImage: 'emptyTile' });
         } else {
-          yIndexArray.push({ xIndex: x, yIndex: y, image: 'emptyTile' });
+          const isBomb = Math.random() < numOfMines / 88;
+
+          let baseImage = 'emptyTile';
+          if (isBomb) {
+            baseImage = 'bomb';
+          }
+          yIndexArray.push({ xIndex: x, yIndex: y, baseImage });
         }
       }
       this.gameData[x] = yIndexArray;
@@ -47,45 +71,63 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    this.initilizeGameData();
-    console.log(this.gameData);
+    let tileSize = 40;
+    this.initilizeGameData(this.numOfMines);
+
+    const finishLevel = (scene) => {
+      let endButton = scene.add.sprite(sceneWidth / 2, sceneHeight / 2, 'fail');
+      endButton
+        .setInteractive()
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
+          console.log(this);
+          console.log('end clicked');
+          this.scene.setNumOfMines(this.numOfMines + 5);
+          this.scene.initilizeGameData(this.numOfMines);
+          startGame();
+          console.log(this.scene.gameData);
+        });
+      this.setClickable(false);
+      console.log(this);
+    };
 
     const sceneWidth = this.sys.game.config.width;
     const sceneHeight = this.sys.game.config.height;
 
-    const finishLevel = (scene) => {
-      scene.add.sprite(sceneWidth / 2, sceneHeight / 2, 'fail');
-      this.setClickable(false);
-      console.log(this);
-    };
+    let startingX = (sceneWidth - tileSize * 12 + tileSize) / 2;
+    let startingY = (sceneHeight - tileSize * 8 + tileSize) / 2;
 
     // Set Background position
     let background = this.add.sprite(0, 0, 'background');
     background.setOrigin(0, 0);
     background.displayWidth = sceneWidth;
 
-    let tileSize = 35;
-    let startingX = (sceneWidth - tileSize * 12) / 2;
-    let startingY = (sceneHeight - tileSize * 8) / 2;
-    let endingX = sceneWidth - startingX - tileSize;
-
     let tileObjectData = {
-      scene: this,
       hidden: 'hiddenTile',
-      bottomImage: 'emptyTile',
       tileSize: tileSize,
       finishLevel,
       clickable: this.getClickable,
     };
-    this.tileObjectData = tileObjectData;
 
-    for (let Xindex = 0; Xindex < 12; Xindex++) {
-      const x = startingX + tileSize * Xindex;
-      for (let Yindex = 0; Yindex < 8; Yindex++) {
-        const y = startingY + Yindex * tileSize;
-        let tile = new Tile(tileObjectData, x, y);
+    //populate the gameboard with tiles
+    const startGame = () => {
+      this.setClickable(true);
+      for (let Xindex = 0; Xindex < 12; Xindex++) {
+        const x = startingX + tileSize * Xindex;
+        for (let Yindex = 0; Yindex < 8; Yindex++) {
+          const y = startingY + Yindex * tileSize;
+          console.log(this.gameData[Xindex][Yindex]);
+          let tile = new Tile(
+            this,
+            { ...this.gameData[Xindex][Yindex], ...tileObjectData },
+            x,
+            y,
+            tileSize,
+          );
+        }
       }
-    }
+    };
+
+    startGame();
   }
 
   update() {}
