@@ -10,6 +10,7 @@ export default class MainScene extends Phaser.Scene {
     this.currentLevel = 1;
   }
 
+  //setter for isGamePlaying set to true on new level or start again
   setIsGamePlaying = (isGamePlaying) => {
     this.isGamePlaying = isGamePlaying;
   };
@@ -23,6 +24,14 @@ export default class MainScene extends Phaser.Scene {
     this.numOfMines = newNumOfMines;
   };
 
+  setTileClickable = (tileData) => {
+    this.surroundingTiles(tileData, 'isTileClickable', true);
+  };
+
+  upCurrentLevelByOne = () => {
+    this.currentLevel += 1;
+  };
+
   /* 
   A function to build the gameData the gameTiles will be created from
   The data is an object where 
@@ -30,7 +39,7 @@ export default class MainScene extends Phaser.Scene {
    - each key has an array of objects whoes index is the yIndex for the tile possition
    - the objects in the array contain the gameData for each tile.
   */
-  initilizeGameData = (numOfMines = 20) => {
+  initilizeGameData = (numOfMines = 10) => {
     console.log('initilizing');
 
     //specifiy index's where bombs cannot be placed
@@ -101,11 +110,12 @@ export default class MainScene extends Phaser.Scene {
       });
     });
 
+    console.log(this.gameData);
+
     //set first three tiles to clickable
     this.gameData[0][1].isTileClickable = true;
     this.gameData[1][1].isTileClickable = true;
     this.gameData[1][0].isTileClickable = true;
-    console.log(this.gameData);
   };
 
   surroundingTiles = (tileData, key, result) => {
@@ -136,10 +146,6 @@ export default class MainScene extends Phaser.Scene {
     }
   };
 
-  setTileClickable = (tileData) => {
-    this.surroundingTiles(tileData, 'isTileClickable', true);
-  };
-
   preload() {
     this.load.image('background', '../assets/Puzzle_dirt.png');
     this.load.image('bomb', './assets/Puzzle_Bomb.jpg');
@@ -148,22 +154,41 @@ export default class MainScene extends Phaser.Scene {
     this.load.image('startTile', './assets/Puzzle_Start.jpg');
     this.load.image('endTile', './assets/Puzzle_End.jpg');
     this.load.image('fail', './assets/fail_game.jpg');
+    this.load.image('win', './assets/win_game.jpg');
   }
 
   create() {
     let tileSize = 38;
     this.initilizeGameData(this.numOfMines);
 
-    const finishLevel = (scene) => {
+    /* function called when game is lost, sets the isGameplaying to false to stop tiles from 
+    being able to the clicked when clicked re-initializes and restarts the game.
+    */
+    const loseLevel = (scene) => {
       let endButton = scene.add.sprite(sceneWidth / 2, sceneHeight / 2, 'fail');
       endButton
         .setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
-          console.log('end clicked');
+          console.log('bomb clicked');
           this.scene.initilizeGameData(this.numOfMines);
           startGame();
         });
-      console.log(this);
+      this.setIsGamePlaying(false);
+    };
+
+    /* function called when game is won, sets the isGameplaying to false to stop tiles from 
+    being able to the clicked, when clicked increases the current level by one and re-initializes and restarts the game.
+    */
+    const winLevel = (scene) => {
+      let endButton = scene.add.sprite(sceneWidth / 2, sceneHeight / 2, 'win');
+      endButton
+        .setInteractive()
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
+          console.log('end clicked');
+          this.scene.initilizeGameData((this.numOfMines += 5));
+          this.scene.upCurrentLevelByOne();
+          startGame();
+        });
       this.setIsGamePlaying(false);
     };
 
@@ -178,24 +203,27 @@ export default class MainScene extends Phaser.Scene {
     background.setOrigin(0, 0);
     background.displayWidth = sceneWidth;
 
+    let level = this.add.text(
+      sceneWidth - startingX + 18,
+      10,
+      'level:' + this.currentLevel,
+      {
+        fontSize: '20px',
+      },
+    );
+
     let tileObjectData = {
       hidden: 'hiddenTile',
       tileSize: tileSize,
-      finishLevel,
+      loseLevel,
+      winLevel,
       getIsGamePlaying: this.getIsGamePlaying,
       setTileClickable: this.setTileClickable,
     };
 
     //populate the gameboard with tiles
     const startGame = () => {
-      let level = this.add.text(
-        sceneWidth - startingX + 18,
-        10,
-        'level:' + this.currentLevel,
-        {
-          fontSize: '20px',
-        },
-      );
+      level.setText(`Level: ${this.currentLevel}`);
       level.displayOriginX = level.displayWidth;
       console.log(level);
       this.setIsGamePlaying(true);

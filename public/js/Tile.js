@@ -3,7 +3,8 @@ export default class Tile extends Phaser.GameObjects.Container {
     const {
       tileSize,
       baseImage,
-      finishLevel,
+      loseLevel,
+      winLevel,
       getIsGamePlaying,
       hidden,
       xIndex,
@@ -34,7 +35,6 @@ export default class Tile extends Phaser.GameObjects.Container {
     this.topImage = topImage;
     this.scene = scene;
     this.tileSize = tileSize;
-    this.finishLevel = finishLevel;
     this.image.displayWidth = tileSize;
     this.image.displayHeight = tileSize;
     this.topImage.displayWidth = tileSize;
@@ -43,23 +43,25 @@ export default class Tile extends Phaser.GameObjects.Container {
       .setInteractive()
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
         let currentTile = gameData[xIndex][yIndex];
-        if (getIsGamePlaying() && currentTile.isTileClickable) {
-          setTileClickable(currentTile);
-          topImage.setVisible(false);
-        }
-        if (baseImage === 'bomb' && currentTile.isTileClickable) {
-          finishLevel(this.scene);
+        if (currentTile.isTileClickable) {
+          if (getIsGamePlaying()) {
+            setTileClickable(currentTile);
+            topImage.setVisible(false);
+          }
+          if (baseImage === 'bomb') {
+            this.destroy();
+            loseLevel(this.scene);
+          }
+          if (baseImage === 'endTile') {
+            winLevel(this.scene);
+          }
         }
       });
     scene.add.existing(this);
   }
 
-  tileClick = function (event) {
-    console.log(event);
-    this.topImage.setVisible(false);
-
-    this.finishLevel(this.scene);
-    this.setClickable(false);
-    this.image.setTexture(this.clickedImage);
+  destroy = () => {
+    console.log(this);
+    this.destroy();
   };
 }
