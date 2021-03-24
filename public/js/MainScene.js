@@ -39,13 +39,28 @@ export default class MainScene extends Phaser.Scene {
       let yIndexArray = [];
       for (let y = 0; y < 8; y++) {
         if (x === 0 && y === 0) {
-          yIndexArray.push({ xIndex: x, yIndex: y, baseImage: 'startTile' });
+          yIndexArray.push({
+            xIndex: x,
+            yIndex: y,
+            baseImage: 'startTile',
+            number: 0,
+          });
         } else if (x === 11 && y === 7) {
-          yIndexArray.push({ xIndex: x, yIndex: y, baseImage: 'endTile' });
+          yIndexArray.push({
+            xIndex: x,
+            yIndex: y,
+            baseImage: 'endTile',
+            number: 0,
+          });
         } else if (
           bombIndexNotAllowed.some((index) => index[0] === x && index[1] === y)
         ) {
-          yIndexArray.push({ xIndex: x, yIndex: y, baseImage: 'emptyTile' });
+          yIndexArray.push({
+            xIndex: x,
+            yIndex: y,
+            baseImage: 'emptyTile',
+            number: 0,
+          });
         } else {
           const isBomb = Math.random() < numOfMines / 88;
 
@@ -53,11 +68,46 @@ export default class MainScene extends Phaser.Scene {
           if (isBomb) {
             baseImage = 'bomb';
           }
-          yIndexArray.push({ xIndex: x, yIndex: y, baseImage });
+          yIndexArray.push({ xIndex: x, yIndex: y, baseImage, number: 0 });
         }
       }
       this.gameData[x] = yIndexArray;
     }
+
+    //add number to the gameData surrounding the mines
+    Object.keys(this.gameData).map((xIndex) => {
+      this.gameData[xIndex].map((tileData) => {
+        if (tileData.baseImage === 'bomb') {
+          const { xIndex, yIndex } = tileData;
+          if (xIndex > 0) {
+            this.gameData[xIndex - 1][yIndex].number += 1;
+          }
+          if (xIndex < 11) {
+            this.gameData[xIndex + 1][yIndex].number += 1;
+          }
+          if (yIndex > 0) {
+            this.gameData[xIndex][yIndex - 1].number += 1;
+          }
+          if (yIndex < 7) {
+            this.gameData[xIndex][yIndex + 1].number += 1;
+          }
+          if (xIndex > 0 && yIndex > 0) {
+            this.gameData[xIndex - 1][yIndex - 1].number += 1;
+          }
+          if (xIndex > 0 && yIndex < 7) {
+            this.gameData[xIndex - 1][yIndex + 1].number += 1;
+          }
+          if (xIndex < 11 && yIndex > 0) {
+            this.gameData[xIndex + 1][yIndex - 1].number += 1;
+          }
+          if (xIndex < 11 && yIndex < 7) {
+            this.gameData[xIndex + 1][yIndex + 1].number += 1;
+          }
+        }
+      });
+    });
+
+    console.log(this.gameData);
   };
 
   preload() {
@@ -71,7 +121,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    let tileSize = 40;
+    let tileSize = 38;
     this.initilizeGameData(this.numOfMines);
 
     const finishLevel = (scene) => {
@@ -79,15 +129,11 @@ export default class MainScene extends Phaser.Scene {
       endButton
         .setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
-          console.log(this);
           console.log('end clicked');
-          this.scene.setNumOfMines(this.numOfMines + 5);
           this.scene.initilizeGameData(this.numOfMines);
           startGame();
-          console.log(this.scene.gameData);
         });
       this.setClickable(false);
-      console.log(this);
     };
 
     const sceneWidth = this.sys.game.config.width;
@@ -115,13 +161,12 @@ export default class MainScene extends Phaser.Scene {
         const x = startingX + tileSize * Xindex;
         for (let Yindex = 0; Yindex < 8; Yindex++) {
           const y = startingY + Yindex * tileSize;
-          console.log(this.gameData[Xindex][Yindex]);
           let tile = new Tile(
             this,
             { ...this.gameData[Xindex][Yindex], ...tileObjectData },
             x,
             y,
-            tileSize,
+            this.gameData,
           );
         }
       }
