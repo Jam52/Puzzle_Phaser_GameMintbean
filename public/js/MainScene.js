@@ -7,7 +7,7 @@ export default class MainScene extends Phaser.Scene {
     this.isGamePlaying = true;
     this.gameData = {};
     this.currentLevel = 1;
-    this.lives = 3;
+    this.lives = 5;
   }
 
   //setter for isGamePlaying set to true on new level or start again
@@ -241,7 +241,7 @@ export default class MainScene extends Phaser.Scene {
           this.scene.upCurrentLevelByOne();
           tiles.forEach((tile) => tile.destroy());
           tiles = [];
-          this.scene.lives += 1;
+          this.scene.lives += 2;
           startGame();
         });
       this.setIsGamePlaying(false);
