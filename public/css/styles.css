@@ -97,13 +97,17 @@ span:nth-child(4) {
 
 /* ------- INDEX.HBS ------------- */
 #rules_div {
+  margin-top: 50px;
   color: beige;
 }
 #rules_div h2 {
   font-size: 4rem;
+  color: aqua;
 }
 #rules_div li {
   font-size: 1.5rem;
+  padding-bottom: 15px;
+  margin-left: 60px;
 }
 .img_class {
   width: 50px;
