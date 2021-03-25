@@ -94,8 +94,8 @@ span:nth-child(4) {
 }
 
 .teamIntro_id a {
-  text-decoration: none;
-  color: cornsilk;
+  text-decoration: underline;
+  color: rgb(171, 199, 221)
 }
 
 /* title heading ends */
