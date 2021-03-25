@@ -12,6 +12,7 @@ export default class Tile extends Phaser.GameObjects.Container {
       setTileClickable,
       getLives,
       setLives,
+      setSurroundingTilesToClickable,
     } = data;
     let image = new Phaser.GameObjects.Sprite(scene, 0, 0, baseImage);
     let number = new Phaser.GameObjects.Text(
@@ -31,6 +32,9 @@ export default class Tile extends Phaser.GameObjects.Container {
     );
 
     super(scene, x, y, [image, number, topImage]);
+    this.baseImage = baseImage;
+    this.xIndex = xIndex;
+    this.yIndex = yIndex;
     this.image = image;
     this.number = number;
     this.number.style.color = '#000';
@@ -46,6 +50,7 @@ export default class Tile extends Phaser.GameObjects.Container {
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
         let currentTile = gameData[xIndex][yIndex];
         if (currentTile.isTileClickable) {
+          setSurroundingTilesToClickable(currentTile);
           if (getIsGamePlaying()) {
             setTileClickable(currentTile);
             topImage.setVisible(false);
@@ -63,4 +68,17 @@ export default class Tile extends Phaser.GameObjects.Container {
       });
     scene.add.existing(this);
   }
+
+  setTileClickable = () => {
+    if (this.baseImage !== 'startTile' && this.baseImage !== 'endTile') {
+      this.topImage.setTexture('hiddenTileClickable');
+    }
+  };
+
+  getXIndex = () => {
+    return this.xIndex;
+  };
+  getYIndex = () => {
+    return this.yIndex;
+  };
 }

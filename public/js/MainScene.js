@@ -136,28 +136,28 @@ export default class MainScene extends Phaser.Scene {
     let surroundingTileArray = [];
     const { xIndex, yIndex } = tileData;
     if (xIndex > 0) {
-      surroundingTileArray.push([[xIndex - 1], [yIndex]]);
+      surroundingTileArray.push([xIndex - 1, yIndex]);
     }
     if (xIndex < 11) {
-      surroundingTileArray.push([[xIndex + 1], [yIndex]]);
+      surroundingTileArray.push([xIndex + 1, yIndex]);
     }
     if (yIndex > 0) {
-      surroundingTileArray.push([[xIndex], [yIndex - 1]]);
+      surroundingTileArray.push([xIndex, yIndex - 1]);
     }
     if (yIndex < 7) {
-      surroundingTileArray.push([[xIndex], [yIndex + 1]]);
+      surroundingTileArray.push([xIndex, yIndex + 1]);
     }
     if (xIndex > 0 && yIndex > 0) {
-      surroundingTileArray.push([[xIndex - 1], [yIndex - 1]]);
+      surroundingTileArray.push([xIndex - 1, yIndex - 1]);
     }
     if (xIndex > 0 && yIndex < 7) {
-      surroundingTileArray.push([[xIndex - 1], [yIndex + 1]]);
+      surroundingTileArray.push([xIndex - 1, yIndex + 1]);
     }
     if (xIndex < 11 && yIndex > 0) {
-      surroundingTileArray.push([[xIndex + 1], [yIndex - 1]]);
+      surroundingTileArray.push([xIndex + 1, yIndex - 1]);
     }
     if (xIndex < 11 && yIndex < 7) {
-      surroundingTileArray.push([[xIndex + 1], [yIndex + 1]]);
+      surroundingTileArray.push([xIndex + 1, yIndex + 1]);
     }
     return surroundingTileArray;
   };
@@ -166,6 +166,10 @@ export default class MainScene extends Phaser.Scene {
     this.load.image('bomb', './assets/Puzzle_Bomb.jpg');
     this.load.image('emptyTile', './assets/Puzzle_Uncovered.jpg');
     this.load.image('hiddenTile', './assets/Puzzle_Hidden.jpg');
+    this.load.image(
+      'hiddenTileClickable',
+      './assets/Puzzle_Hidden_clickable.jpg',
+    );
     this.load.image('startTile', './assets/Puzzle_Start.jpg');
     this.load.image('endTile', './assets/Puzzle_End.jpg');
     this.load.image('fail', './assets/fail_game.jpg');
@@ -193,11 +197,11 @@ export default class MainScene extends Phaser.Scene {
     });
 
     //set heart image
-    let heartImage = this.add.sprite(45, 50, 'heart');
+    let heartImage = this.add.sprite(45, 60, 'heart');
     heartImage.displayWidth = 50;
     heartImage.displayHeight = 50;
 
-    let livesText = this.add.text(39, 40, this.lives, {
+    let livesText = this.add.text(39, 50, this.lives, {
       fontSize: '20px',
       fontStyle: 'bold',
     });
@@ -217,6 +221,7 @@ export default class MainScene extends Phaser.Scene {
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
           console.log('bomb clicked');
           tiles.forEach((tile) => tile.destroy());
+          tiles = [];
           this.scene.lives = 3;
           this.scene.currentLevel = 1;
           startGame();
@@ -235,10 +240,31 @@ export default class MainScene extends Phaser.Scene {
           console.log('end clicked');
           this.scene.upCurrentLevelByOne();
           tiles.forEach((tile) => tile.destroy());
+          tiles = [];
           this.scene.lives += 1;
           startGame();
         });
       this.setIsGamePlaying(false);
+    };
+
+    //function to set surrounding tiles to clickable
+    const setSurroundingTilesToClickable = (tileData) => {
+      const surroundTileCoordinates = this.surroundingTilesCoordinatesArray(
+        tileData,
+      );
+      tiles.forEach((tile) => {
+        const xIndex = tile.getXIndex();
+        const yIndex = tile.getYIndex();
+        //tests if a tile x,y is in the surroungTileArrayCooirdinats
+        const isTileInCoordinatesArray = surroundTileCoordinates.some(
+          (coodinates) => {
+            return coodinates[0] === xIndex && coodinates[1] === yIndex;
+          },
+        );
+        if (isTileInCoordinatesArray) {
+          tile.setTileClickable();
+        }
+      });
     };
 
     let tileObjectData = {
@@ -250,20 +276,26 @@ export default class MainScene extends Phaser.Scene {
       setTileClickable: this.setTileClickable,
       getLives: this.getLives,
       setLives,
+      setSurroundingTilesToClickable,
     };
 
     // initialize the gameData and populate the gameboard with tiles
     const startGame = () => {
       console.log(`Current Level: ${this.currentLevel}`);
       this.initilizeGameData();
-      //set current level text
 
-      level.setText(`The Path Finder      Level: ${this.currentLevel}`);
+      //set current level text
+      level.setText(
+        `The Path Finder               Level: ${this.currentLevel}`,
+      );
       level.displayOriginX = level.displayWidth;
 
       //set current lives text
       livesText.setText(this.lives);
+
       this.setIsGamePlaying(true);
+
+      // add Tiles based on gameData
       for (let Xindex = 0; Xindex < 12; Xindex++) {
         const x = startingX + tileSize * Xindex;
         for (let Yindex = 0; Yindex < 8; Yindex++) {
@@ -279,6 +311,9 @@ export default class MainScene extends Phaser.Scene {
           );
         }
       }
+
+      //set tiles surrounding start tile to clickable
+      setSurroundingTilesToClickable(this.gameData[0][0]);
     };
 
     startGame();
