@@ -222,7 +222,7 @@ export default class MainScene extends Phaser.Scene {
           console.log('bomb clicked');
           tiles.forEach((tile) => tile.destroy());
           tiles = [];
-          this.scene.lives = 3;
+          this.scene.lives = 5;
           this.scene.currentLevel = 1;
           startGame();
         });
