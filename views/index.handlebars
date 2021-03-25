@@ -1,8 +1,8 @@
 <div class="row">
-    <div id="panel_div" class="col-sm-4">
+    <div id="panel_div" class="col-sm-2">
         <div class="outer-circle">
             <div class="inner-circle">
-                Find The Path Puzzle
+                The Path Finder
             </div>
             <span></span>
             <span></span>
@@ -10,35 +10,62 @@
             <span></span>
 
         </div>
-        <div id="teamIntro_id">
+        <div class="teamIntro_id">
             <h2> Built By: </h2>
             <p>
             <ul>
+                <li>Jamie Sajdak</li>
                 <li>Sammar Abbas</li>
-                <li>Jam</li>
+                <li><a href="https://mintbean.io/">Mintbean Challenge Platform https://mintbean.io/</a></li>
+            </ul>
+            </p>
+        </div>
+        <div class="teamIntro_id">
+            <h2> Tools Used: </h2>
+            <p>
+            <ul>
+                <li>Phaser JS</li>
+                <li>Node.JS</li>
+                <li>Heroku</li>
             </ul>
             </p>
         </div>
     </div>
-    <div id="dynamic_body_div" class="col-sm-8">
+    <div id="dynamic_body_div" class="col-sm-10">
         <div id="rules_start_hide">
+
+            <div class="move_center">
+                <iframe width="560" height="355" src="https://www.youtube.com/embed/96Zvj-MjQAI?autoplay=1&mute=1"
+                    frameborder="0" allowfullscreen class="responsive-iframe frame_class">
+                </iframe>
+                <br />
+                <a href="/newGame" id="play_button_div"><button> Click to Play</button></a>
+            </div>
+
             <div id="rules_div">
-                <h2>How to play:</h2>
+                <br />
+                <h2 class="move_center">Instructions & Rules to Play:</h2>
                 <p>
                 <ol>
-                    <li>......</li>
-                    <li>......</li>
-                    <li>......</li>
-                    <li>......</li>
-                    <li>......</li>
-                    <li>......</li>
+                    <li>Find path from starting point <img src="assets/Puzzle_Start.jpg" class="img_class" />
+                        to ending point <img src="assets/Puzzle_End.jpg" class="img_class" />
+                        without discovering bombs <img src="assets/Puzzle_Bomb.jpg" class="img_class" /> </li>
+                    <li>Click block <img src="assets/Puzzle_Hidden.jpg" class="img_class" /> to explore
+                        right path</li>
+                    <li>Blank box <img src="assets/Puzzle_Uncovered.jpg" class="img_class" /> means there is no
+                        bomb around it</li>
+                    <li>Box with Numbers <img src="assets/Puzzle_Uncovered.jpg" class="img_class" /> hint
+                        about number of bombs around it.
+                    </li>
+                    <li>Total 3 hearts <img src="assets/Puzzle_Uncovered.jpg" class="img_class" /> given with
+                        the begin of new game</li>
+                    <li>Level Up will increment 1 heart <img src="assets/Puzzle_Uncovered.jpg" class="img_class" /> as
+                        a bonus</li>
                 </ol>
                 </p>
             </div>
 
-            <div>
-                <a href="/newGame" id="play_button_div"><button> Click to Play</button></a>
-            </div>
+
         </div>
 
     </div>

@@ -193,6 +193,9 @@ export default class MainScene extends Phaser.Scene {
       fontSize: '20px',
     });
 
+    
+
+
     //set heart image
     let heartImage = this.add.sprite(45, 50, 'heart');
     heartImage.displayWidth = 50;
@@ -258,7 +261,8 @@ export default class MainScene extends Phaser.Scene {
       console.log(`Current Level: ${this.currentLevel}`);
       this.initilizeGameData();
       //set current level text
-      level.setText(`Find Path Puzzle      Level: ${this.currentLevel}`);
+      
+      level.setText(`The Path Finder      Level: ${this.currentLevel}`);
       level.displayOriginX = level.displayWidth;
 
       //set current lives text
