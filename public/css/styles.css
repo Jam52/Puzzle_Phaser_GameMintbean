@@ -25,8 +25,10 @@ body {
 
 .outer-circle {
   position: relative;
-  height: 260px;
-  width: 300px;
+  /* height: 260px;
+  width: 300px; */
+  height: 16rem;
+  width: 20rem;
   background: linear-gradient(#14ffe9, #ffeb3b, #ff00e0);
   border-radius: 50%;
   animation: rotate 1.5s linear infinite;
@@ -127,4 +129,13 @@ span:nth-child(4) {
   width: 300px;
   height: 80px;
   border-radius: 50px;
+}
+
+/* **** responsive design **** */
+
+@media only screen and (min-width: 550px) {
+  .inner-circle {
+    padding-top: 4vh;
+    top: 10px;
+  }
 }
