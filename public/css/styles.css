@@ -21,12 +21,15 @@ body {
   border: beige 6px solid;
 }
 
+ol, li {
+  padding: 0;
+  margin: 0;
+}
+
 /* ////////// Title Heading ////////////// */
 
 .outer-circle {
   position: relative;
-  /* height: 260px;
-  width: 300px; */
   height: 16rem;
   width: 20rem;
   background: linear-gradient(#14ffe9, #ffeb3b, #ff00e0);
@@ -91,13 +94,19 @@ span:nth-child(4) {
 }
 
 .teamIntro_id a {
-  text-decoration: none;
-  color: cornsilk;
+  text-decoration: underline;
+  color: rgb(171, 199, 221)
 }
 
 /* title heading ends */
 
 /* ------- INDEX.HBS ------------- */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin:  2rem auto
+}
+
 #rules_div {
   margin-top: 50px;
   color: beige;
@@ -109,11 +118,12 @@ span:nth-child(4) {
 #rules_div li {
   font-size: 1.5rem;
   padding-bottom: 15px;
-  margin-left: 60px;
+  margin-left: 30px;
 }
 .img_class {
-  width: 50px;
+  width: 45px;
   height: auto;
+  padding: 10px 0;
 }
 #play_button_div {
   vertical-align: middle;
