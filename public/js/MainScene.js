@@ -8,7 +8,6 @@ export default class MainScene extends Phaser.Scene {
     this.gameData = {};
     this.currentLevel = 1;
     this.lives = 3;
-    
   }
 
   //setter for isGamePlaying set to true on new level or start again
@@ -164,7 +163,6 @@ export default class MainScene extends Phaser.Scene {
   };
 
   preload() {
-    // this.load.image('background', '../assets/Puzzle_dirt.png');
     this.load.image('bomb', './assets/Puzzle_Bomb.jpg');
     this.load.image('emptyTile', './assets/Puzzle_Uncovered.jpg');
     this.load.image('hiddenTile', './assets/Puzzle_Hidden.jpg');
@@ -173,6 +171,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image('fail', './assets/fail_game.jpg');
     this.load.image('win', './assets/win_game.jpg');
     this.load.image('heart', './assets/heart.png');
+    this.load.image('background', './assets/Puzzle_dirt.png');
   }
 
   create() {
@@ -192,9 +191,6 @@ export default class MainScene extends Phaser.Scene {
     let level = this.add.text(sceneWidth - startingX + 18, 10, 'level: 1', {
       fontSize: '20px',
     });
-
-    
-
 
     //set heart image
     let heartImage = this.add.sprite(45, 50, 'heart');
@@ -261,7 +257,7 @@ export default class MainScene extends Phaser.Scene {
       console.log(`Current Level: ${this.currentLevel}`);
       this.initilizeGameData();
       //set current level text
-      
+
       level.setText(`The Path Finder      Level: ${this.currentLevel}`);
       level.displayOriginX = level.displayWidth;
 
