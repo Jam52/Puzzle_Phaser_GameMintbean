@@ -9,7 +9,7 @@ This hackerthon is to build a puzzel game with a focus on using and learning Pha
 The project is a collaboration between:
 
 Jamie Sajdak - [Github](https://github.com/Jam52) / [Portfolio](https://www.jamiesajdak.com/)\
-Sammar Abbas - [Github](https://github.com/8sagh8)
+Sammar Abbas - [Github](https://github.com/8sagh8) / [Portfolio](https://sammar-abbas.herokuapp.com/)\
 
 ## Available Scripts
 
