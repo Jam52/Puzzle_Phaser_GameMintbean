@@ -8,6 +8,10 @@ export default class Tile extends Phaser.GameObjects.Container {
       xIndex,
       yIndex,
       clickTile,
+      setLives,
+      getLives,
+      winLevel,
+      loseLevel,
       setSurroundingTilesToClickable,
     } = data;
     let image = new Phaser.GameObjects.Sprite(scene, 0, 0, baseImage);
@@ -53,13 +57,15 @@ export default class Tile extends Phaser.GameObjects.Container {
     this.isClicked =
       baseImage === 'startTile' || baseImage === 'endTile' ? true : false;
     this.getIsGamePlaying = getIsGamePlaying;
-
+    this.setLives = setLives;
+    this.getLives = getLives;
+    this.winLevel = winLevel;
+    this.loseLevel = loseLevel;
     scene.add.existing(this);
   }
 
   setTileClickable = () => {
     if (this.isClicked !== true) {
-      console.log('setTileClickabe');
       this.topImage.setTexture('hiddenTileClickable');
       this.isTileClickable = true;
     }
@@ -73,7 +79,6 @@ export default class Tile extends Phaser.GameObjects.Container {
   };
 
   clickTile = () => {
-    console.log('tile clicked');
     if (this.getIsGamePlaying()) {
       if (this.isTileClickable) {
         this.topImage.setVisible(false);
@@ -81,14 +86,14 @@ export default class Tile extends Phaser.GameObjects.Container {
         this.setSurroundingTilesToClickable(this.tileData);
       }
       if (this.baseImage === 'bomb') {
-        const lives = this.scene.getLives();
-        this.scene.setLives(lives - 1);
-        if (lives === 0) {
-          this.scene.loseLevel(this.scene);
+        const lives = this.getLives();
+        if (lives === 1) {
+          this.loseLevel(this.scene);
         }
+        this.setLives(lives - 1);
       }
       if (this.baseImage === 'endTile') {
-        this.scene.winLevel(this.scene);
+        this.winLevel(this.scene);
       }
     }
   };

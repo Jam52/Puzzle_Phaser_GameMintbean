@@ -225,7 +225,6 @@ export default class MainScene extends Phaser.Scene {
           this.scene.upCurrentLevelByOne();
           tiles.forEach((tile) => tile.destroy());
           tiles = [];
-          this.scene.lives += 2;
           startGame();
         });
       this.setIsGamePlaying(false);
@@ -271,7 +270,7 @@ export default class MainScene extends Phaser.Scene {
             return coodinates[0] === xIndex && coodinates[1] === yIndex;
           },
         );
-        if (isTileInCoordinatesArray) {
+        if (isTileInCoordinatesArray && tile.baseImage != 'endTile') {
           tile.clickTile();
         }
       });
@@ -284,7 +283,9 @@ export default class MainScene extends Phaser.Scene {
           tileData.yIndex === tile.yIndex
         ) {
           tile.clickTile();
-          setSurroundingTilesToClickable(tileData);
+          if (tile.isTileClickable) {
+            setSurroundingTilesToClickable(tileData);
+          }
         }
       });
     };
