@@ -3,19 +3,15 @@ export default class Tile extends Phaser.GameObjects.Container {
     const {
       tileSize,
       baseImage,
-      loseLevel,
-      winLevel,
       getIsGamePlaying,
       hidden,
       xIndex,
       yIndex,
-      setTileClickable,
-      getLives,
-      setLives,
+      clickTile,
       setSurroundingTilesToClickable,
     } = data;
     let image = new Phaser.GameObjects.Sprite(scene, 0, 0, baseImage);
-    let number = new Phaser.GameObjects.Text(
+    let numberText = new Phaser.GameObjects.Text(
       scene,
       -8,
       -12,
@@ -31,47 +27,41 @@ export default class Tile extends Phaser.GameObjects.Container {
       baseImage === 'startTile' || baseImage === 'endTile' ? baseImage : hidden,
     );
 
-    super(scene, x, y, [image, number, topImage]);
+    super(scene, x, y, [image, numberText, topImage]);
     this.baseImage = baseImage;
     this.xIndex = xIndex;
     this.yIndex = yIndex;
     this.image = image;
-    this.number = number;
-    this.number.style.color = '#000';
-    this.topImage = topImage;
+    this.number = gameData[xIndex][yIndex].number;
+    this.numberText = numberText;
+    this.numberText.style.color = '#000';
+    this.tileData = gameData[xIndex][yIndex];
     this.scene = scene;
     this.tileSize = tileSize;
     this.image.displayWidth = tileSize;
     this.image.displayHeight = tileSize;
+    this.topImage = topImage;
     this.topImage.displayWidth = tileSize;
     this.topImage.displayHeight = tileSize;
     this.topImage
       .setInteractive()
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
-        let currentTile = gameData[xIndex][yIndex];
-        if (currentTile.isTileClickable) {
-          setSurroundingTilesToClickable(currentTile);
-          if (getIsGamePlaying()) {
-            setTileClickable(currentTile);
-            topImage.setVisible(false);
-          }
-          if (baseImage === 'bomb') {
-            setLives(getLives() - 1);
-            if (getLives() === 0) {
-              loseLevel(this.scene);
-            }
-          }
-          if (baseImage === 'endTile') {
-            winLevel(this.scene);
-          }
-        }
+        clickTile(gameData[xIndex][yIndex]);
       });
+    this.setSurroundingTilesToClickable = setSurroundingTilesToClickable;
+    this.isTileClickable = false;
+    this.isClicked =
+      baseImage === 'startTile' || baseImage === 'endTile' ? true : false;
+    this.getIsGamePlaying = getIsGamePlaying;
+
     scene.add.existing(this);
   }
 
   setTileClickable = () => {
-    if (this.baseImage !== 'startTile' && this.baseImage !== 'endTile') {
+    if (this.isClicked !== true) {
+      console.log('setTileClickabe');
       this.topImage.setTexture('hiddenTileClickable');
+      this.isTileClickable = true;
     }
   };
 
@@ -80,5 +70,30 @@ export default class Tile extends Phaser.GameObjects.Container {
   };
   getYIndex = () => {
     return this.yIndex;
+  };
+
+  clickTile = () => {
+    console.log('tile clicked');
+    if (this.getIsGamePlaying()) {
+      if (this.isTileClickable) {
+        this.topImage.setVisible(false);
+        this.isClicked = true;
+        this.setSurroundingTilesToClickable(this.tileData);
+      }
+      if (this.baseImage === 'bomb') {
+        const lives = this.scene.getLives();
+        this.scene.setLives(lives - 1);
+        if (lives === 0) {
+          this.scene.loseLevel(this.scene);
+        }
+      }
+      if (this.baseImage === 'endTile') {
+        this.scene.winLevel(this.scene);
+      }
+    }
+  };
+
+  getNumber = () => {
+    return this.number;
   };
 }

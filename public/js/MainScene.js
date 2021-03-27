@@ -24,15 +24,6 @@ export default class MainScene extends Phaser.Scene {
     this.numOfMines = newNumOfMines;
   };
 
-  setTileClickable = (tileData) => {
-    this.surroundingTilesCoordinatesArray(tileData).forEach(
-      (tileCoordinates) => {
-        const [x, y] = tileCoordinates;
-        this.gameData[x][y].isTileClickable = true;
-      },
-    );
-  };
-
   upCurrentLevelByOne = () => {
     this.currentLevel += 1;
   };
@@ -71,7 +62,6 @@ export default class MainScene extends Phaser.Scene {
             yIndex: y,
             baseImage: 'startTile',
             number: 0,
-            isTileClickable: false,
           });
         } else if (x === 11 && y === 7) {
           yIndexArray.push({
@@ -79,7 +69,6 @@ export default class MainScene extends Phaser.Scene {
             yIndex: y,
             baseImage: 'endTile',
             number: 0,
-            isTileClickable: false,
           });
         } else if (
           bombIndexNotAllowed.some((index) => index[0] === x && index[1] === y)
@@ -89,7 +78,6 @@ export default class MainScene extends Phaser.Scene {
             yIndex: y,
             baseImage: 'emptyTile',
             number: 0,
-            isTileClickable: false,
           });
         } else {
           //bombs are randomised using a % chance based on numOfMines / num of overall tiles
@@ -103,7 +91,6 @@ export default class MainScene extends Phaser.Scene {
             yIndex: y,
             baseImage,
             number: 0,
-            isTileClickable: false,
           });
         }
       }
@@ -125,9 +112,6 @@ export default class MainScene extends Phaser.Scene {
     });
 
     //set first three tiles to clickable
-    this.gameData[0][1].isTileClickable = true;
-    this.gameData[1][1].isTileClickable = true;
-    this.gameData[1][0].isTileClickable = true;
   };
   /* ---- END initilizeGame Method ----*/
 
@@ -263,9 +247,49 @@ export default class MainScene extends Phaser.Scene {
         );
         if (isTileInCoordinatesArray) {
           tile.setTileClickable();
+          if (
+            tile.baseImage !== 'bomb' &&
+            tile.isClicked === false &&
+            tile.getNumber() === 0
+          ) {
+            tile.clickTile();
+            clickSurroundingTiles(tile.tileData);
+          }
         }
       });
     };
+
+    const clickSurroundingTiles = (tileData) => {
+      const surroundTileCoordinates = this.surroundingTilesCoordinatesArray(
+        tileData,
+      );
+      tiles.forEach((tile) => {
+        const xIndex = tile.getXIndex();
+        const yIndex = tile.getYIndex();
+        const isTileInCoordinatesArray = surroundTileCoordinates.some(
+          (coodinates) => {
+            return coodinates[0] === xIndex && coodinates[1] === yIndex;
+          },
+        );
+        if (isTileInCoordinatesArray) {
+          tile.clickTile();
+        }
+      });
+    };
+
+    const clickTile = (tileData) => {
+      tiles.forEach((tile) => {
+        if (
+          tileData.xIndex === tile.xIndex &&
+          tileData.yIndex === tile.yIndex
+        ) {
+          tile.clickTile();
+          setSurroundingTilesToClickable(tileData);
+        }
+      });
+    };
+
+    //function to reveal surround tiles if tile number is 0
 
     let tileObjectData = {
       hidden: 'hiddenTile',
@@ -277,6 +301,7 @@ export default class MainScene extends Phaser.Scene {
       getLives: this.getLives,
       setLives,
       setSurroundingTilesToClickable,
+      clickTile,
     };
 
     // initialize the gameData and populate the gameboard with tiles
