@@ -1,20 +1,28 @@
 const express = require("express");
-const exphbs = require ("express-handlebars");
+const exp_hbs = require ("express-handlebars");
 const bodyParser = require("body-parser");
 
 const app = express();
 
-app.engine("handlebars", exphbs());
+app.engine("handlebars", exp_hbs());
 app.set("view engine", "handlebars");
 
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({extended: false}));
 
 // access static file
 app.use(express.static('public'));
 
-app.get('/', (req, res)=>{
-    res.render('index');
+app.get(`/`, (req, res)=>{
+    res.render('index', {
+      title: "Find the path"
+    });
   });
+
+app.get(`/newGame`, (req, res)=>{
+  res.render('newGame', {
+    title: "Playing Game Level"
+  });
+});
 
 // listening route
 const PORT = process.env.PORT || 3000;
