@@ -154,6 +154,7 @@ export default class MainScene extends Phaser.Scene {
       'hiddenTileClickable',
       './assets/Puzzle_Hidden_clickable.jpg',
     );
+    this.load.image('flagTile', './assets/Puzzle_Flag.jpg');
     this.load.image('startTile', './assets/Puzzle_Start.jpg');
     this.load.image('endTile', './assets/Puzzle_End.jpg');
     this.load.image('fail', './assets/fail_game.jpg');
@@ -301,7 +302,16 @@ export default class MainScene extends Phaser.Scene {
       });
     };
 
-    //function to reveal surround tiles if tile number is 0
+    const flagTile = (tileData) => {
+      tiles.forEach((tile) => {
+        if (
+          tile.xIndex === tileData.xIndex &&
+          tile.yIndex === tileData.yIndex
+        ) {
+          tile.toggleFlagTile();
+        }
+      });
+    };
 
     let tileObjectData = {
       hidden: 'hiddenTile',
@@ -314,6 +324,7 @@ export default class MainScene extends Phaser.Scene {
       setLives,
       setSurroundingTilesToClickable,
       clickTile,
+      flagTile,
     };
 
     // initialize the gameData and populate the gameboard with tiles

@@ -8,6 +8,7 @@ export default class Tile extends Phaser.GameObjects.Container {
       xIndex,
       yIndex,
       clickTile,
+      flagTile,
       setLives,
       getLives,
       winLevel,
@@ -50,7 +51,12 @@ export default class Tile extends Phaser.GameObjects.Container {
     this.topImage
       .setInteractive()
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
-        clickTile(gameData[xIndex][yIndex]);
+        console.log(event);
+        if (event.button === 2) {
+          flagTile(gameData[xIndex][yIndex]);
+        } else {
+          clickTile(gameData[xIndex][yIndex]);
+        }
       });
     this.setSurroundingTilesToClickable = setSurroundingTilesToClickable;
     this.isTileClickable = false;
@@ -61,11 +67,12 @@ export default class Tile extends Phaser.GameObjects.Container {
     this.getLives = getLives;
     this.winLevel = winLevel;
     this.loseLevel = loseLevel;
+    this.isFlagTile = false;
     scene.add.existing(this);
   }
 
   setTileClickable = () => {
-    if (this.isClicked !== true) {
+    if (this.isClicked !== true && !this.isFlagTile) {
       this.topImage.setTexture('hiddenTileClickable');
       this.isTileClickable = true;
     }
@@ -100,5 +107,19 @@ export default class Tile extends Phaser.GameObjects.Container {
 
   getNumber = () => {
     return this.number;
+  };
+
+  toggleFlagTile = () => {
+    console.log('toggle');
+    if (!this.isFlagTile) {
+      this.topImage.setTexture('flagTile');
+      console.log('in');
+      this.isTileClickable = false;
+      this.isFlagTile = true;
+    } else {
+      this.isFlagTile = false;
+      this.isTileClickable = true;
+      this.topImage.setTexture('hiddenTileClickable');
+    }
   };
 }
