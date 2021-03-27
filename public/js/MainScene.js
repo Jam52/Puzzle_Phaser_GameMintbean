@@ -246,10 +246,21 @@ export default class MainScene extends Phaser.Scene {
         );
         if (isTileInCoordinatesArray) {
           tile.setTileClickable();
+          const initialTiles = [
+            [1, 0],
+            [0, 1],
+            [1, 1],
+          ];
+          const isInitialTile = initialTiles.some((coordinates) => {
+            return (
+              tile.xIndex === coordinates[0] && tile.yIndex === coordinates[1]
+            );
+          });
           if (
             tile.baseImage !== 'bomb' &&
             tile.isClicked === false &&
-            tile.getNumber() === 0
+            tile.getNumber() === 0 &&
+            isInitialTile === false
           ) {
             tile.clickTile();
             clickSurroundingTiles(tile.tileData);
