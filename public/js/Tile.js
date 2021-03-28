@@ -7,8 +7,6 @@ export default class Tile extends Phaser.GameObjects.Container {
       hidden,
       xIndex,
       yIndex,
-      clickTile,
-      flagTile,
       setLives,
       getLives,
       winLevel,
@@ -48,16 +46,6 @@ export default class Tile extends Phaser.GameObjects.Container {
     this.topImage = topImage;
     this.topImage.displayWidth = tileSize;
     this.topImage.displayHeight = tileSize;
-    this.topImage
-      .setInteractive()
-      .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, function (event) {
-        console.log(event);
-        if (event.button === 2) {
-          flagTile(gameData[xIndex][yIndex]);
-        } else {
-          clickTile(gameData[xIndex][yIndex]);
-        }
-      });
     this.setSurroundingTilesToClickable = setSurroundingTilesToClickable;
     this.isTileClickable = false;
     this.isClicked =
@@ -113,7 +101,6 @@ export default class Tile extends Phaser.GameObjects.Container {
     console.log('toggle');
     if (!this.isFlagTile) {
       this.topImage.setTexture('flagTile');
-      console.log('in');
       this.isTileClickable = false;
       this.isFlagTile = true;
     } else {

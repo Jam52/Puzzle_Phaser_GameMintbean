@@ -288,31 +288,6 @@ export default class MainScene extends Phaser.Scene {
       });
     };
 
-    const clickTile = (tileData) => {
-      tiles.forEach((tile) => {
-        if (
-          tileData.xIndex === tile.xIndex &&
-          tileData.yIndex === tile.yIndex
-        ) {
-          tile.clickTile();
-          if (tile.isTileClickable) {
-            setSurroundingTilesToClickable(tileData);
-          }
-        }
-      });
-    };
-
-    const flagTile = (tileData) => {
-      tiles.forEach((tile) => {
-        if (
-          tile.xIndex === tileData.xIndex &&
-          tile.yIndex === tileData.yIndex
-        ) {
-          tile.toggleFlagTile();
-        }
-      });
-    };
-
     let tileObjectData = {
       hidden: 'hiddenTile',
       tileSize: tileSize,
@@ -323,8 +298,6 @@ export default class MainScene extends Phaser.Scene {
       getLives: this.getLives,
       setLives,
       setSurroundingTilesToClickable,
-      clickTile,
-      flagTile,
     };
 
     // initialize the gameData and populate the gameboard with tiles
@@ -348,15 +321,27 @@ export default class MainScene extends Phaser.Scene {
         const x = startingX + tileSize * Xindex;
         for (let Yindex = 0; Yindex < 8; Yindex++) {
           const y = startingY + Yindex * tileSize;
-          tiles.push(
-            new Tile(
-              this,
-              { ...this.gameData[Xindex][Yindex], ...tileObjectData },
-              x,
-              y,
-              this.gameData,
-            ),
+
+          const newTile = new Tile(
+            this,
+            { ...this.gameData[Xindex][Yindex], ...tileObjectData },
+            x,
+            y,
+            this.gameData,
           );
+          //add click function
+          newTile
+            .setSize(tileSize, tileSize)
+            .setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, (event) => {
+              if (event.button === 2) {
+                newTile.toggleFlagTile();
+              } else {
+                newTile.clickTile();
+              }
+            });
+
+          tiles.push(newTile);
         }
       }
 
