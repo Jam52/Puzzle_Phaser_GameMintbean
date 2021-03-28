@@ -1,5 +1,58 @@
 import Tile from './Tile.js';
 
+const levelData = {
+  1: {
+    numOfRows: 8,
+    numOfCols: 12,
+    numOfMines: 15,
+  },
+  2: {
+    numOfRows: 8,
+    numOfCols: 13,
+    numOfMines: 20,
+  },
+  3: {
+    numOfRows: 9,
+    numOfCols: 14,
+    numOfMines: 25,
+  },
+  4: {
+    numOfRows: 9,
+    numOfCols: 14,
+    numOfMines: 30,
+  },
+  5: {
+    numOfRows: 10,
+    numOfCols: 15,
+    numOfMines: 35,
+  },
+  6: {
+    numOfRows: 10,
+    numOfCols: 15,
+    numOfMines: 40,
+  },
+  7: {
+    numOfRows: 10,
+    numOfCols: 15,
+    numOfMines: 45,
+  },
+  8: {
+    numOfRows: 11,
+    numOfCols: 16,
+    numOfMines: 50,
+  },
+  9: {
+    numOfRows: 11,
+    numOfCols: 16,
+    numOfMines: 55,
+  },
+  10: {
+    numOfRows: 12,
+    numOfCols: 17,
+    numOfMines: 65,
+  },
+};
+
 // Create a MainScene, preload all images, set background
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -24,12 +77,12 @@ export default class MainScene extends Phaser.Scene {
     this.numOfMines = newNumOfMines;
   };
 
-  upCurrentLevelByOne = () => {
-    this.currentLevel += 1;
-  };
-
   getLives = () => {
     return this.lives;
+  };
+
+  upCurrentLevelByOne = () => {
+    this.currentLevel += 1;
   };
 
   /* ---- InizializeGameData Method ---- 
@@ -40,6 +93,7 @@ export default class MainScene extends Phaser.Scene {
   */
 
   initilizeGameData = () => {
+    const { numOfCols, numOfRows, numOfMines } = levelData[this.currentLevel];
     this.gameData = {};
     console.log('initilizing');
     //specifiy index's where bombs cannot be placed
@@ -47,15 +101,15 @@ export default class MainScene extends Phaser.Scene {
       [0, 1],
       [1, 0],
       [1, 1],
-      [10, 6],
-      [10, 7],
-      [11, 6],
+      [numOfCols - 2, numOfRows - 2],
+      [numOfCols - 2, numOfRows - 1],
+      [numOfCols - 1, numOfRows - 2],
     ];
 
     //build gameData object
-    for (let x = 0; x < 12; x++) {
+    for (let x = 0; x < numOfCols; x++) {
       let yIndexArray = [];
-      for (let y = 0; y < 8; y++) {
+      for (let y = 0; y < numOfRows; y++) {
         if (x === 0 && y === 0) {
           yIndexArray.push({
             xIndex: x,
@@ -63,7 +117,7 @@ export default class MainScene extends Phaser.Scene {
             baseImage: 'startTile',
             number: 0,
           });
-        } else if (x === 11 && y === 7) {
+        } else if (x === numOfCols - 1 && y === numOfRows - 1) {
           yIndexArray.push({
             xIndex: x,
             yIndex: y,
@@ -81,7 +135,8 @@ export default class MainScene extends Phaser.Scene {
           });
         } else {
           //bombs are randomised using a % chance based on numOfMines / num of overall tiles
-          const isBomb = Math.random() < (15 + this.currentLevel * 3) / 88;
+          const isBomb =
+            Math.random() < numOfMines / (numOfRows * numOfCols - 6);
           let baseImage = 'emptyTile';
           if (isBomb) {
             baseImage = 'bomb';
@@ -304,11 +359,15 @@ export default class MainScene extends Phaser.Scene {
     const startGame = () => {
       console.log(`Current Level: ${this.currentLevel}`);
       this.initilizeGameData();
+      tileSize = (sceneWidth - 200) / levelData[this.currentLevel].numOfCols;
+      startingX =
+        (sceneWidth -
+          tileSize * levelData[this.currentLevel].numOfCols +
+          tileSize) /
+        2;
 
       //set current level text
-      level.setText(
-        `The Path Finder               Level: ${this.currentLevel}`,
-      );
+      level.setText(`MineDigger                   Level: ${this.currentLevel}`);
       level.displayOriginX = level.displayWidth;
 
       //set current lives text
@@ -317,9 +376,17 @@ export default class MainScene extends Phaser.Scene {
       this.setIsGamePlaying(true);
 
       // add Tiles based on gameData
-      for (let Xindex = 0; Xindex < 12; Xindex++) {
+      for (
+        let Xindex = 0;
+        Xindex < levelData[this.currentLevel].numOfCols;
+        Xindex++
+      ) {
         const x = startingX + tileSize * Xindex;
-        for (let Yindex = 0; Yindex < 8; Yindex++) {
+        for (
+          let Yindex = 0;
+          Yindex < levelData[this.currentLevel].numOfRows;
+          Yindex++
+        ) {
           const y = startingY + Yindex * tileSize;
 
           const newTile = new Tile(
