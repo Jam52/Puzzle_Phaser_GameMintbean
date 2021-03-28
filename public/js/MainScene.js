@@ -24,15 +24,6 @@ export default class MainScene extends Phaser.Scene {
     this.numOfMines = newNumOfMines;
   };
 
-  setTileClickable = (tileData) => {
-    this.surroundingTilesCoordinatesArray(tileData).forEach(
-      (tileCoordinates) => {
-        const [x, y] = tileCoordinates;
-        this.gameData[x][y].isTileClickable = true;
-      },
-    );
-  };
-
   upCurrentLevelByOne = () => {
     this.currentLevel += 1;
   };
@@ -71,7 +62,6 @@ export default class MainScene extends Phaser.Scene {
             yIndex: y,
             baseImage: 'startTile',
             number: 0,
-            isTileClickable: false,
           });
         } else if (x === 11 && y === 7) {
           yIndexArray.push({
@@ -79,7 +69,6 @@ export default class MainScene extends Phaser.Scene {
             yIndex: y,
             baseImage: 'endTile',
             number: 0,
-            isTileClickable: false,
           });
         } else if (
           bombIndexNotAllowed.some((index) => index[0] === x && index[1] === y)
@@ -89,7 +78,6 @@ export default class MainScene extends Phaser.Scene {
             yIndex: y,
             baseImage: 'emptyTile',
             number: 0,
-            isTileClickable: false,
           });
         } else {
           //bombs are randomised using a % chance based on numOfMines / num of overall tiles
@@ -103,7 +91,6 @@ export default class MainScene extends Phaser.Scene {
             yIndex: y,
             baseImage,
             number: 0,
-            isTileClickable: false,
           });
         }
       }
@@ -125,9 +112,6 @@ export default class MainScene extends Phaser.Scene {
     });
 
     //set first three tiles to clickable
-    this.gameData[0][1].isTileClickable = true;
-    this.gameData[1][1].isTileClickable = true;
-    this.gameData[1][0].isTileClickable = true;
   };
   /* ---- END initilizeGame Method ----*/
 
@@ -170,6 +154,7 @@ export default class MainScene extends Phaser.Scene {
       'hiddenTileClickable',
       './assets/Puzzle_Hidden_clickable.jpg',
     );
+    this.load.image('flagTile', './assets/Puzzle_Flag.jpg');
     this.load.image('startTile', './assets/Puzzle_Start.jpg');
     this.load.image('endTile', './assets/Puzzle_End.jpg');
     this.load.image('fail', './assets/fail_game.jpg');
@@ -241,7 +226,6 @@ export default class MainScene extends Phaser.Scene {
           this.scene.upCurrentLevelByOne();
           tiles.forEach((tile) => tile.destroy());
           tiles = [];
-          this.scene.lives += 2;
           startGame();
         });
       this.setIsGamePlaying(false);
@@ -263,6 +247,68 @@ export default class MainScene extends Phaser.Scene {
         );
         if (isTileInCoordinatesArray) {
           tile.setTileClickable();
+          const initialTiles = [
+            [1, 0],
+            [0, 1],
+            [1, 1],
+          ];
+          const isInitialTile = initialTiles.some((coordinates) => {
+            return (
+              tile.xIndex === coordinates[0] && tile.yIndex === coordinates[1]
+            );
+          });
+          if (
+            tile.baseImage !== 'bomb' &&
+            tile.isClicked === false &&
+            tile.getNumber() === 0 &&
+            isInitialTile === false
+          ) {
+            tile.clickTile();
+            clickSurroundingTiles(tile.tileData);
+          }
+        }
+      });
+    };
+
+    const clickSurroundingTiles = (tileData) => {
+      const surroundTileCoordinates = this.surroundingTilesCoordinatesArray(
+        tileData,
+      );
+      tiles.forEach((tile) => {
+        const xIndex = tile.getXIndex();
+        const yIndex = tile.getYIndex();
+        const isTileInCoordinatesArray = surroundTileCoordinates.some(
+          (coodinates) => {
+            return coodinates[0] === xIndex && coodinates[1] === yIndex;
+          },
+        );
+        if (isTileInCoordinatesArray && tile.baseImage != 'endTile') {
+          tile.clickTile();
+        }
+      });
+    };
+
+    const clickTile = (tileData) => {
+      tiles.forEach((tile) => {
+        if (
+          tileData.xIndex === tile.xIndex &&
+          tileData.yIndex === tile.yIndex
+        ) {
+          tile.clickTile();
+          if (tile.isTileClickable) {
+            setSurroundingTilesToClickable(tileData);
+          }
+        }
+      });
+    };
+
+    const flagTile = (tileData) => {
+      tiles.forEach((tile) => {
+        if (
+          tile.xIndex === tileData.xIndex &&
+          tile.yIndex === tileData.yIndex
+        ) {
+          tile.toggleFlagTile();
         }
       });
     };
@@ -277,6 +323,8 @@ export default class MainScene extends Phaser.Scene {
       getLives: this.getLives,
       setLives,
       setSurroundingTilesToClickable,
+      clickTile,
+      flagTile,
     };
 
     // initialize the gameData and populate the gameboard with tiles
